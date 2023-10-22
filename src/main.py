@@ -140,7 +140,7 @@ class downloader:
                 self.get_post(f"https://{domain}/{favorite['service']}/user/{favorite['id']}")
 
     def get_post(self, url:str):
-        found = re.search(r'(https://(kemono\.party|coomer\.party)/)(([^/]+)/user/([^/]+)($|/post/[^/]+))', url)
+        found = re.search(r'(https://(kemono\.party|coomer\.party|kemono\.su)/)(([^/]+)/user/([^/]+)($|/post/[^/]+))', url)
         if not found:
             logger.error(f"Unable to find url parameters for {url}")
             return
@@ -782,8 +782,8 @@ class downloader:
             if not domain in domains: domains.append(domain)
 
         if self.k_fav_posts or self.k_fav_users:
-            if not 'kemono.party' in domains:
-                domains.append('kemono.party')
+            if not 'kemono.su' in domains:
+                domains.append('kemono.su')
         if self.c_fav_posts or self.c_fav_users:
             if not 'coomer.party' in domains:
                 domains.append('coomer.party')
@@ -799,9 +799,9 @@ class downloader:
 
         if self.k_fav_posts:
             try:
-                self.get_favorites('kemono.party', 'post')
+                self.get_favorites('kemono.su', 'post')
             except:
-                logger.exception("Unable to get favorite posts from kemono.party")
+                logger.exception("Unable to get favorite posts from kemono.su")
         if self.c_fav_posts:
             try:
                 self.get_favorites('coomer.party', 'post')
@@ -809,9 +809,9 @@ class downloader:
                 logger.exception("Unable to get favorite posts from coomer.party")
         if self.k_fav_users:
             try:
-                self.get_favorites('kemono.party', 'artist', self.k_fav_users)
+                self.get_favorites('kemono.su', 'artist', self.k_fav_users)
             except:
-                logger.exception("Unable to get favorite users from kemono.party")
+                logger.exception("Unable to get favorite users from kemono.su")
         if self.c_fav_users:
             try:
                 self.get_favorites('coomer.party', 'artist', self.c_fav_users)
@@ -829,7 +829,11 @@ class downloader:
         if isinstance(time, Number):
             t = datetime.datetime.fromtimestamp(time)
         elif isinstance(time, str):
-            t = datetime.datetime.fromisoformat(time)
+            if len(time) < 9:
+                temp = time[0:4]+"-"+time[4:6]+"-"+time[6:]
+                t = datetime.datetime.fromisoformat(temp)
+            else:
+                t = datetime.datetime.fromisoformat(time)
             # t = datetime.datetime.strptime(time, date_format)
         elif time == None:
             return None
